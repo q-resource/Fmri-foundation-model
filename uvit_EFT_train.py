@@ -52,16 +52,7 @@ def cli_parser():
 
 
 
-# image_mask_name = '/gpfs3/well/win-biobank/users/eov316/ukbiobank/Longitudinal/MNI152_T1_2mm_brain.nii.gz'
-# image_mask=torch.FloatTensor(nib.load(image_mask_name).get_fdata().flatten())>0
-#
-# image_mask1= nib.load(image_mask_name).get_fdata()
-# image_mask1 = torch.FloatTensor(np.expand_dims(np.expand_dims(image_mask1,0),0))
-# image_mask1 = torch.nn.functional.interpolate(image_mask1,(64,64,64), mode='nearest')[0,0,:,:,:]
 
-#assert batch_size % accelerator.num_processes == 0
-#mini_batch_size = batch_size // accelerator.num_processes
-#a n h c  a FC -->n
 def load_data(args):
     global finnal_train_FC_data, finnal_train_vbm_data, finnal_train_seedfc_data, finnal_train_dti_data, mask_list
     finnal_train_FC_data, finnal_train_vbm_data, finnal_train_seedfc_data, finnal_train_dti_data, mask_list = 0, 0, 0, 0, 0
@@ -132,11 +123,14 @@ def load_data(args):
         SST_fu3_vbm_train = SST_fu3_vbm[SSTBL_train_fu3]
         SST_fu3_vbm_test = SST_fu3_vbm[SSTBL_test_fu3]
 
-        final_train_vbm_data = np.concatenate((SSTBL_vbm_train, SST_fu2_vbm_train, SST_fu3_vbm_train), axis=0)
-        final_test_vbm_data = np.concatenate((SSTBL_vbm_test, SST_fu2_vbm_test, SST_fu3_vbm_test), axis=0)
-
-        # Split final_test_vbm_data into validation and test sets
-        final_val_vbm_data, final_test_vbm_data = torch.utils.data.random_split(final_test_vbm_data, [val_size, test_size])
+        # Combine all VBM data
+        all_vbm_data = np.concatenate((SSTBL_vbm_train, SST_fu2_vbm_train, SST_fu3_vbm_train,
+                                      SSTBL_vbm_test, SST_fu2_vbm_test, SST_fu3_vbm_test), axis=0)
+        
+        # Split VBM data using same indices
+        final_train_vbm_data = all_vbm_data[train_indices]
+        final_val_vbm_data = all_vbm_data[val_indices]
+        final_test_vbm_data = all_vbm_data[test_indices]
 
     if args.using_seedfc:
         SSTBL_seedfc = np.load("/home/jiaty/EFTdataset/BL_EFTcommon_first10seedFC.npy")
@@ -343,7 +337,7 @@ if __name__ == '__main__':
               +"_using_self_mask_"+str(args.self_mask_rate)+'uisng_seedfc'+str(args.using_seedfc)+'uisng_dti'+str(args.using_dti)+'indi_percent'+str(args.self_mask_rate)+'random_mask'+str(args.mask_rate)
 
     print("model training config: ",file_info)
-    training_info="train_test8:2"+"_BLFU23_predict_"
+    training_info="train_val_test7:1:2"+"_BLFU23_predict_"
     save_file_name = "BLFU23_predict_"
     if args.using_seedfc:
         training_info=training_info+"_seedfc_"+str(args.seedfc_id)

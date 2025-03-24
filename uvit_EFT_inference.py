@@ -34,7 +34,16 @@ def g_impute_nan_as_mean(x):
 
 
 import argparse
+import torch
+import numpy as np
+import random
 
+seed = 42
+torch.manual_seed(seed)
+np.random.seed(seed)
+random.seed(seed)
+
+torch.cuda.manual_seed_all(seed)
 
 def cli_parser():
     parser = argparse.ArgumentParser(description="UVIT_fmri")

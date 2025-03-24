@@ -52,16 +52,7 @@ def cli_parser():
 
 
 
-# image_mask_name = '/gpfs3/well/win-biobank/users/eov316/ukbiobank/Longitudinal/MNI152_T1_2mm_brain.nii.gz'
-# image_mask=torch.FloatTensor(nib.load(image_mask_name).get_fdata().flatten())>0
-#
-# image_mask1= nib.load(image_mask_name).get_fdata()
-# image_mask1 = torch.FloatTensor(np.expand_dims(np.expand_dims(image_mask1,0),0))
-# image_mask1 = torch.nn.functional.interpolate(image_mask1,(64,64,64), mode='nearest')[0,0,:,:,:]
 
-#assert batch_size % accelerator.num_processes == 0
-#mini_batch_size = batch_size // accelerator.num_processes
-#a n h c  a FC -->n
 def load_data(args):
 
     global finnal_train_FC_data,finnal_train_vbm_data,finnal_train_seedfc_data,finnal_train_dti_data,mask_list
@@ -91,8 +82,31 @@ def load_data(args):
     SSTBL_train_data_fu3 = SSTBL_fu3[SSTBL_train_fu3]
     SSTBL_test_data_fu3 = SSTBL_fu3[SSTBL_test_fu3]
 
-    final_train_data = np.concatenate((SSTBL_train_data_BL, SSTBL_train_data_fu2, SSTBL_train_data_fu3,), axis=0)
-    finnal_test_data = np.concatenate((SSTBL_test_data_BL, SSTBL_test_data_fu2, SSTBL_test_data_fu3), axis=0)
+    # Combine all data first
+    all_data = np.concatenate((SSTBL_train_data_BL, SSTBL_train_data_fu2, SSTBL_train_data_fu3,
+                              SSTBL_test_data_BL, SSTBL_test_data_fu2, SSTBL_test_data_fu3), axis=0)
+    
+    # Calculate split sizes
+    total_size = len(all_data)
+    train_size = int(0.7 * total_size)
+    val_size = int(0.1 * total_size)
+    test_size = total_size - train_size - val_size
+    
+    # Create random splits
+    train_data, val_data, test_data = torch.utils.data.random_split(
+        all_data, [train_size, val_size, test_size],
+        generator=torch.Generator().manual_seed(42)
+    )
+    
+    # Store indices for consistent splitting of other data types
+    train_indices = train_data.indices
+    val_indices = val_data.indices
+    test_indices = test_data.indices
+    
+    # Convert back to numpy arrays
+    final_train_data = all_data[train_indices]
+    final_val_data = all_data[val_indices]
+    final_test_data = all_data[test_indices]
 
     if args.using_FC:
         SSTBL_FC = np.load('/home/jiaty/SST_dataset/SSTBLcommon_FC.npy')
@@ -107,11 +121,18 @@ def load_data(args):
         SSTBL_train_FC_fu3 = SSTBL_FC_fu3[SSTBL_train_fu3]
         SSTBL_test_FC_fu3 = SSTBL_FC_fu3[SSTBL_test_fu3]
 
-        finnal_train_FC_data = np.concatenate((SSTBL_train_FC_BL, SSTBL_train_FC_fu2, SSTBL_train_FC_fu3), axis=0)
-        finnal_test_FC_data = np.concatenate((SSTBL_test_FC_BL, SSTBL_test_FC_fu2, SSTBL_test_FC_fu3), axis=0)
+        # Combine all FC data
+        all_FC_data = np.concatenate((SSTBL_train_FC_BL, SSTBL_train_FC_fu2, SSTBL_train_FC_fu3,
+                                     SSTBL_test_FC_BL, SSTBL_test_FC_fu2, SSTBL_test_FC_fu3), axis=0)
+        
+        # Split FC data using same indices
+        finnal_train_FC_data = all_FC_data[train_indices]
+        finnal_val_FC_data = all_FC_data[val_indices]
+        finnal_test_FC_data = all_FC_data[test_indices]
 
-        print("finnal_test_FC_data", finnal_test_FC_data.shape)
         print("finnal_train_FC_data", finnal_train_FC_data.shape)
+        print("finnal_val_FC_data", finnal_val_FC_data.shape)
+        print("finnal_test_FC_data", finnal_test_FC_data.shape)
 
     if args.using_vbm:
         SSTBL_vbm = np.load('/home/jiaty/SST_dataset/SSTBLVBM.npy')
@@ -126,8 +147,14 @@ def load_data(args):
         SST_fu3_vbm_train = SST_fu3_vbm[SSTBL_train_fu3]
         SST_fu3_vbm_test = SST_fu3_vbm[SSTBL_test_fu3]
 
-        finnal_train_vbm_data=np.concatenate((SSTBL_vbm_train,SST_fu2_vbm_train,SST_fu3_vbm_train),axis=0)
-        finnal_test_vbm_data=np.concatenate((SSTBL_vbm_test,SST_fu2_vbm_test,SST_fu3_vbm_test),axis=0)
+        # Combine all VBM data
+        all_vbm_data = np.concatenate((SSTBL_vbm_train, SST_fu2_vbm_train, SST_fu3_vbm_train,
+                                      SSTBL_vbm_test, SST_fu2_vbm_test, SST_fu3_vbm_test), axis=0)
+        
+        # Split VBM data using same indices
+        finnal_train_vbm_data = all_vbm_data[train_indices]
+        finnal_val_vbm_data = all_vbm_data[val_indices]
+        finnal_test_vbm_data = all_vbm_data[test_indices]
 
     if args.using_seedfc:
         SSTBL_seedfc=np.load("/home/jiaty/SST_dataset/BL_SSTcommon_seedFC_64_4.npy")
@@ -148,10 +175,18 @@ def load_data(args):
         SST_fu3_seedfc_train=SST_fu3_seedfc[SSTBL_train_fu3]
         SST_fu3_seedfc_test=SST_fu3_seedfc[SSTBL_test_fu3]
 
-        finnal_train_seedfc_data = np.concatenate((SSTBL_seedfc_train, SST_fu2_seedfc_train, SST_fu3_seedfc_train), axis=0)
-        finnal_test_seedfc_data = np.concatenate((SSTBL_seedfc_test, SST_fu2_seedfc_test, SST_fu3_seedfc_test), axis=0)
-        print("finnal_train_seedfc_data",finnal_train_seedfc_data.shape)
-        print("finnal_test_seedfc_data",finnal_test_seedfc_data.shape)
+        # Combine all seedfc data
+        all_seedfc_data = np.concatenate((SSTBL_seedfc_train, SST_fu2_seedfc_train, SST_fu3_seedfc_train,
+                                         SSTBL_seedfc_test, SST_fu2_seedfc_test, SST_fu3_seedfc_test), axis=0)
+        
+        # Split seedfc data using same indices
+        finnal_train_seedfc_data = all_seedfc_data[train_indices]
+        finnal_val_seedfc_data = all_seedfc_data[val_indices]
+        finnal_test_seedfc_data = all_seedfc_data[test_indices]
+
+        print("finnal_train_seedfc_data", finnal_train_seedfc_data.shape)
+        print("finnal_val_seedfc_data", finnal_val_seedfc_data.shape)
+        print("finnal_test_seedfc_data", finnal_test_seedfc_data.shape)
 
     if args.using_dti:
         SSTBL_dti = np.load('/home/jiaty/SSTDTI/DTI_BL.npy')
@@ -166,8 +201,14 @@ def load_data(args):
         SST_fu3_dti_train=SSTFU3_dti[SSTBL_train_fu3]
         SST_fu3_dti_test=SSTFU3_dti[SSTBL_test_fu3]
 
-        finnal_train_dti_data = np.concatenate((SSTBL_dti_train, SST_fu2_dti_train, SST_fu3_dti_train), axis=0)
-        finnal_test_dti_data = np.concatenate((SSTBL_dti_test, SST_fu2_dti_test, SST_fu3_dti_test), axis=0)
+        # Combine all DTI data
+        all_dti_data = np.concatenate((SSTBL_dti_train, SST_fu2_dti_train, SST_fu3_dti_train,
+                                      SSTBL_dti_test, SST_fu2_dti_test, SST_fu3_dti_test), axis=0)
+        
+        # Split DTI data using same indices
+        finnal_train_dti_data = all_dti_data[train_indices]
+        finnal_val_dti_data = all_dti_data[val_indices]
+        finnal_test_dti_data = all_dti_data[test_indices]
 
 
 
