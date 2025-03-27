@@ -13,9 +13,9 @@ from scipy.io import savemat
 from einops import rearrange, repeat
 import random
 import sys
-import seaborn as sns
-from scipy.io import loadmat
-import h5py
+# import seaborn as sns
+# from scipy.io import loadmat
+# import h5py
 from scipy.stats import pearsonr
 def load_mask():
     image_mask_name = '/home/jiaty/U_VIT/Dataset/MNI152_T1_3mm_brain_mask.nii'  # 61，73，61
@@ -249,10 +249,10 @@ def load_data_fu23():
     return final_train_data,finnal_test_data
 
 def load_data_fu23baseline(target):
-    SSTBL = np.load('/home/jiaty/UVIT_dataset/BL_sub_1556_28_post_anc.npy')
+    SSTBL = np.load('/mnt/extra_drive/jiaty/zrq/UVIT_dataset/BL_sub_1556_28_post_anc.npy')
     SSTBL=SSTBL[:,target,:,:,:]
-    SSTBL_FC = np.load('/home/jiaty/UVIT_dataset/BL_1556_FC.npy')
-    index_SSTBL = pd.read_csv("/home/jiaty/UVIT_dataset/BLafterQCtrainindex.csv")
+    SSTBL_FC = np.load('/mnt/extra_drive/jiaty/zrq/UVIT_dataset/BL_1556_FC.npy')
+    index_SSTBL = pd.read_csv("/mnt/extra_drive/jiaty/zrq/UVIT_dataset/BLafterQCtrainindex.csv")
     index_SSTBL['index'] = index_SSTBL['index'].astype(int)
     SSTBL_train_BL = index_SSTBL[index_SSTBL['index'] == 1].index
     SSTBL_test_BL = index_SSTBL[index_SSTBL['index'] == 0].index
@@ -261,10 +261,10 @@ def load_data_fu23baseline(target):
     SSTBL_train_FC_BL = SSTBL_FC[SSTBL_train_BL]
     SSTBL_test_FC_BL = SSTBL_FC[SSTBL_test_BL]
 
-    SSTBL_fu2 = np.load('/home/jiaty/UVIT_dataset/FU2_sub_1157_56_post_anhc.npy')
+    SSTBL_fu2 = np.load('/mnt/extra_drive/jiaty/zrq/UVIT_dataset/FU2_sub_1157_56_post_anhc.npy')
     SSTBL_fu2=SSTBL_fu2[:,target,:,:,:]
-    SSTBL_FC_fu2 = np.load('/home/jiaty/UVIT_dataset/FU2_1157_rest_FC.npy')
-    index_SSTBL_fu2 = pd.read_csv("/home/jiaty/UVIT_dataset/FU2afterQCtrainindex.csv")
+    SSTBL_FC_fu2 = np.load('/mnt/extra_drive/jiaty/zrq/UVIT_dataset/FU2_1157_rest_FC.npy')
+    index_SSTBL_fu2 = pd.read_csv("/mnt/extra_drive/jiaty/zrq/UVIT_dataset/FU2afterQCtrainindex.csv")
     index_SSTBL_fu2['index'] = index_SSTBL_fu2['index'].astype(int)
     SSTBL_train_fu2 = index_SSTBL_fu2[index_SSTBL_fu2['index'] == 1].index
     SSTBL_test_fu2 = index_SSTBL_fu2[index_SSTBL_fu2['index'] == 0].index
@@ -273,10 +273,10 @@ def load_data_fu23baseline(target):
     SSTBL_train_FC_fu2 = SSTBL_FC_fu2[SSTBL_train_fu2]
     SSTBL_test_FC_fu2 = SSTBL_FC_fu2[SSTBL_test_fu2]
 
-    SSTBL_fu3 = np.load('/home/jiaty/UVIT_dataset/FU3_sub_1038_56_post_anhc.npy')
+    SSTBL_fu3 = np.load('/mnt/extra_drive/jiaty/zrq/UVIT_dataset/FU3_sub_1038_56_post_anhc.npy')
     SSTBL_fu3=SSTBL_fu3[:,target,:,:,:]
-    SSTBL_FC_fu3 = np.load('/home/jiaty/UVIT_dataset/FU3_1038_rest_FC.npy')
-    index_SSTBL_fu3 = pd.read_csv("/home/jiaty/UVIT_dataset/FU3afterQCtrainindex.csv")
+    SSTBL_FC_fu3 = np.load('/mnt/extra_drive/jiaty/zrq/UVIT_dataset/FU3_1038_rest_FC.npy')
+    index_SSTBL_fu3 = pd.read_csv("/mnt/extra_drive/jiaty/zrq/UVIT_dataset/FU3afterQCtrainindex.csv")
     index_SSTBL_fu3['index'] = index_SSTBL_fu3['index'].astype(int)
     SSTBL_train_fu3 = index_SSTBL_fu3[index_SSTBL_fu3['index'] == 1].index
     SSTBL_test_fu3 = index_SSTBL_fu3[index_SSTBL_fu3['index'] == 0].index
@@ -784,7 +784,7 @@ def check_two_sample_result():
     # data1=data1[0,:,:,:]
     # data2=data2[0,:,:,:]
 def spilt_train_test_data():
-    all_data_fu2 = np.load("/home/jiaty/UVIT_dataset/FU2_sub_1157_56_post.npy")
+    all_data_fu2 = np.load("/mnt/extra_drive/jiaty/zrq/UVIT_dataset/FU2_sub_1157_56_post.npy")
     # FC_fu2 = np.load("/home/jiaty/UVIT_dataset/FU2_1157_rest_FC.npy")
     # index_data_fu2 = pd.read_csv("/home/jiaty/UVIT_dataset/FU2afterQCtrainindex.csv")
     data_fu2 = all_data_fu2[:, 0:4, :, :, :]
@@ -798,7 +798,7 @@ def spilt_train_test_data():
     # train_data_fu2 = data_fu2[train_index_fu2]
     # test_data_fu2 = data_fu2[test_index_fu2]
 
-    all_data_fu3 = np.load("/home/jiaty/UVIT_dataset/FU3_sub_1038_56_post.npy")
+    all_data_fu3 = np.load("/mnt/extra_drive/jiaty/zrq/UVIT_dataset/FU3_sub_1038_56_post.npy")
     # FC_fu3 = np.load("/home/jiaty/UVIT_dataset/FU3_1038_rest_FC.npy")
     # index_data_fu3 = pd.read_csv("/home/jiaty/UVIT_dataset/FU3afterQCtrainindex.csv")
     data_fu3 = all_data_fu3[:, 0:4, :, :, :]
@@ -821,7 +821,7 @@ def spilt_train_test_data():
     # finnal_test_FC_data = np.concatenate((test_FC_fu2, test_FC_fu3), axis=0)
 
 
-    all_data_baseline = np.load("/home/jiaty/UVIT_dataset/BL_sub_1556_28_post.npy")
+    all_data_baseline = np.load("/mnt/extra_drive/jiaty/zrq/UVIT_dataset/BL_sub_1556_28_post.npy")
     data_baseline = all_data_baseline[:, [0, 1,2], :, :, :]
     # FC_baseline = np.load("/home/jiaty/UVIT_dataset/BL_1556_FC.npy")
     # index_data_baseline = pd.read_csv("/home/jiaty/UVIT_dataset/BLafterQCtrainindex.csv")
@@ -836,9 +836,9 @@ def spilt_train_test_data():
     # train_data_baseline = data_baseline[train_index_baseline]
     # test_data_baseline = data_baseline[test_index_baseline]
 
-    np.save("/home/jiaty/UVIT_dataset/FU2_sub_1157_56_post_anhc.npy",data_fu2)
-    np.save("/home/jiaty/UVIT_dataset/FU3_sub_1038_56_post_anhc.npy",data_fu3)
-    np.save("/home/jiaty/UVIT_dataset/BL_sub_1556_28_post_anc.npy", data_baseline)
+    np.save("/mnt/extra_drive/jiaty/zrq/UVIT_dataset/FU2_sub_1157_56_post_anhc.npy",data_fu2)
+    np.save("/mnt/extra_drive/jiaty/zrq/UVIT_dataset/FU3_sub_1038_56_post_anhc.npy",data_fu3)
+    np.save("/mnt/extra_drive/jiaty/zrq/UVIT_dataset/BL_sub_1556_28_post_anc.npy", data_baseline)
     # np.save("/home/jiaty/UVIT_dataset/FU2_3_test_FC_424.npy", finnal_test_FC_data)
 
 
@@ -1080,21 +1080,21 @@ def save_npy_to_nii(predict_path,save_path):
 
 if __name__ == '__main__':
     #N 2024-04-06-20-32-08_noise_pred_64_8_10_512_8_300_0.0001  H 2024-04-06-19-59-37_noise_pred_64_8_10_512_8_300_0.0001
-    # main_path_inference = "/home/jiaty/SST_task/inference/BLFU23_predict_stopsuccess_by_gosuccess_seedfc_0/2024-05-21-17-02-27/cfg_12_nstep_50_inference_mode:noise_pred"
+    main_path_inference = "/home/jiaty/SST_task/inference/BLFU23_predict_stopsuccess_by_gosuccess_seedfc_0/2024-05-21-17-02-27/cfg_12_nstep_50_inference_mode:noise_pred"
     # #predict MID by EFT
-    # file_name='test_prediction_SST_non_controls_naverge_1.npy'
-    # path=os.path.join(main_path_inference,file_name)
-    # save_path=os.path.dirname(path)
+    file_name='test_prediction_SST_non_controls_naverge_1.npy'
+    path=os.path.join(main_path_inference,file_name)
+    save_path=os.path.dirname(path)
 
-    preprocess_data_add_zero_reshape_to_64()
-    # train_data,test_data,test_num_list,train_num_list=load_data_fu23baseline(target=1)  # predict_gosuccess_by_stopsuccess:0 predict_stopsuccess_by_gosuccess:1
+    #preprocess_data_add_zero_reshape_to_64()
+    train_data,test_data,test_num_list,train_num_list=load_data_fu23baseline(target=1)
     # #train_data, test_data = load_data_fu23()
     # # plot_lossCurve(save_path,main_path_inference)
     # # mask_data_path=mask_predict_data_add_zero(path,save_path)
     # #
     # # show_example(mask_data_path,save_path)
     #
-    # computed_corr_inference_test(path,save_path,test_data,type='fu2',datasets_name='fu23baseline',split=test_num_list) #[195,262, 232]  #
+    computed_corr_inference_test(path,save_path,test_data,type='fu2',datasets_name='fu23baseline',split=test_num_list) #[195,262, 232]  #
 
     # computed_corr_train_mean_test(save_path,train_data,test_data,type='fu2',datasets_name='fu23baseline',split=test_num_list,train_split=train_num_list) #[ 892, 754,1034]
     # computed_corr_inference_inference(path,save_path,type='fu2',datasets_name='fu23',split=test_num_list)
