@@ -1,12 +1,8 @@
-Brain-DiT Implementation Code
+Brain-DiT Implementation Code (Quick Start)
 1.Train and Test code: uvit_EFT_train.py uvit_EFT_inference.py
 2.Cognitive Relevance Map(crs) computing code:crs_compute.py
 3.Behavioural Results:behavior_data_for_brain-dit.zip
-好的👌，我帮你直接生成一个完整的 **README.md 文件内容**，你复制粘贴到 GitHub 项目里就能用。
 
----
-
-```markdown
 # 🧠 fMRI Foundation Model
 
 > A foundation model for functional MRI (fMRI), enabling brain state representation learning, cognitive task decoding, and brain–behavior association analysis.
