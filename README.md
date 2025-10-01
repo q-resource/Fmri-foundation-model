@@ -90,7 +90,7 @@ Typical requirements include:
 
 ## 📊 Data & Preprocessing
 
-* Input: fMRI time series (NIfTI or ROI-based signals, e.g., `samples × time × nodes`)
+* Input: fMRI time series (NIfTI or ROI-based signals, e.g., `samples × time × nodes（contrast number）`)
 * Auxiliary: Task labels, behavioral/phenotypic data (CSV format)
 
 Preprocessing typically includes:
