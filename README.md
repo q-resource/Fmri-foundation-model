@@ -152,15 +152,7 @@ print(metrics)
 
 ---
 
-## 📊 Results
 
-| Task                | Dataset         | Metric    | Value |
-| ------------------- | --------------- | --------- | ----- |
-| EFT decoding        | Example dataset | Accuracy  | 78%   |
-| SST decoding        | Example dataset | AUC       | 0.82  |
-| Behavior prediction | Example dataset | Pearson r | 0.45  |
-
-*(Replace with your real experimental results.)*
 
 ---
 
