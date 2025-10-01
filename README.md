@@ -191,9 +191,3 @@ This project is licensed under the **MIT License** – see [LICENSE](LICENSE) fo
 
 If you use this project in your research, please cite it accordingly.
 
-```
-
----
-
-要不要我再帮你出一个 **中文版 README_zh.md**，你可以放在仓库里给国内用户看？
-```
